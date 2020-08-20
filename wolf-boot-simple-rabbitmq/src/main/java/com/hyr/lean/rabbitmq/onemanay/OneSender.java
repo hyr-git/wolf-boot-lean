@@ -11,6 +11,11 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
+/***
+ * https://www.cnblogs.com/bigdataZJ/p/rabbitmq3.html
+ * @author mlj
+ *
+ */
 public class OneSender {
 	
 	//声明队列
@@ -49,6 +54,16 @@ public class OneSender {
 		//建立通道,生产者和消费者都是在通道中完成
 		Channel channel = connection.createChannel();
 		
+		/*
+		 * 没有basiQos设置，会执行轮询策略，每个消费者都消费了两个消息
+		 * basicQos设置,会执行公平机制。
+		 * 即,第一个消息给C1，第二个给C2,第三个消息来的时候,发现C2还在消费,就派发给了已经消费玩空闲的C1，第四个消息来时,发现C2仍然在消费，
+		 * 这时候就把消息发送给了消费完第三个消息的C1,C1总共消费了3条消息用时6秒，而C2消费一条消息耗时8秒,所以这就是公平机制。
+		 * 
+		 * 使用了basicQos的公平机制更加合理,能够很好的做到负载均衡,避免因为不顾消费者的消费情况而盲目派发情况的出现.
+		 */
+		channel.basicQos(1);
+		
 		//是否持久化---表示该队列是否持久化到磁盘(若要是队列消息不丢失,同时需要将消息声明为持久化)
 		boolean durable = true;
 		
@@ -58,10 +73,10 @@ public class OneSender {
 		boolean autoDelete = false;
 		
 		//可选参数,可以指定队列长度,消息生存时间、镜像设置等。
-		Map argsMap = new HashMap();
+		Map<String, Object> argsMap = new HashMap<String, Object>();
 		
 		/*
-		 * 声明一个队列名称为task_queue
+		 * 声明一个队列名称为task_queue  --- 队列持久化
 		 */
 		channel.queueDeclare(QUEUE_NAME, durable, exclusive, autoDelete, argsMap);
 		
@@ -73,7 +88,12 @@ public class OneSender {
 		String exchange = "";
 		//路由key--交换计根据路由key来将消息发送到指定的队列,若使用默认的交换器,routingkey设置为队列的名称
 		String routingKey = QUEUE_NAME;
-		//消息的属性
+		
+		/*
+		 * 消息的属性----消息持久化
+		 * deliveryMode=1代表不持久化，deliveryMode=2代表持久化
+		 * Content-type "text/plain", deliveryMode 2 (persistent), priority zero 
+		 */
 		BasicProperties props = MessageProperties.PERSISTENT_TEXT_PLAIN;
 		//消息内容
 		byte[] body = message.getBytes("UTF-8");

@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -14,6 +15,8 @@ import com.rabbitmq.client.Envelope;
 
 public class Receiver {
     private final static String QUEUE_NAME = "hello.august";
+    private final static String EXCHANEG_NAME = "direct_exchange";
+
 
 	public static void main(String[] args) throws IOException, TimeoutException {
 		ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -26,6 +29,9 @@ public class Receiver {
 		boolean exclusive = false;
 		boolean autoDelete = false;
 		channel.queueDeclare(QUEUE_NAME, durable, exclusive, autoDelete, null);
+		channel.exchangeDeclare(EXCHANEG_NAME, BuiltinExchangeType.DIRECT,true);
+
+		channel.queueBind(QUEUE_NAME, EXCHANEG_NAME, QUEUE_NAME);
 		
 		Consumer consumer = new DefaultConsumer(channel) {
 			@Override
