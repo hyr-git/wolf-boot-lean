@@ -15,12 +15,4 @@ public class MsgController {
 	
 	@Autowired
 	private ErrorDirectReceiver errorDirectReceiver;*/
-	
-	/**
-	 * 
-	 */
-	@GetMapping("/sendMsg")
-	public void sendMsg() {
-		//infoDirectReceiver.process(msg);
-	}
 }
