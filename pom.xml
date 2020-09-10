@@ -17,6 +17,7 @@
   	<module>wolf-boot-lean-rabbitmq</module>
 	
 	<module>wolf-boot-simple-rabbitmq</module>
+    <module>wolf-boot-lean-logback</module>
   </modules>
   
   <build>
