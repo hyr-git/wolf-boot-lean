@@ -14,10 +14,14 @@
 	</parent>
   
   <modules>
-  	<module>wolf-boot-lean-rabbitmq</module>
-	
+  	<module>wolf-boot-lean-rabbitmq</module>	
+  	<module>wolf-boot-lean-rabbitmq-topic</module>	
+  	<module>wolf-boot-lean-rabbitmq-fanout</module>	
+  	<module>wolf-boot-lean-rabbitmq-consumer</module>	
+  	<module>wolf-boot-lean-rabbitmq-provider</module>	
+	<module>wolf-boot-lean-aop</module>
+	<module>wolf-boot-lean-logback</module>
 	<module>wolf-boot-simple-rabbitmq</module>
-    <module>wolf-boot-lean-logback</module>
   </modules>
   
   <build>
