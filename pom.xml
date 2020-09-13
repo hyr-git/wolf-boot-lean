@@ -22,6 +22,9 @@
 	<module>wolf-boot-lean-aop</module>
 	<module>wolf-boot-lean-logback</module>
 	<module>wolf-boot-simple-rabbitmq</module>
+      <module>wolf-boot-lean-mybatis</module>
+      <module>wolf-boot-lean-redis</module>
+      <module>wolf-boot-lean-security</module>
   </modules>
   
   <build>
