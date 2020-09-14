@@ -1,5 +1,6 @@
 package com.hyr.boot.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Data
 public class PageDTO {
     private int pageNum = 1;
     private int pageSize = 10;

@@ -67,6 +67,6 @@ public class UserController {
     @GetMapping("/search")
     @ApiOperation(value = "检索用户",httpMethod = "GET")
     public IPage<User> search(PageDTO dto){
-        return userService.page(new Page<>(dto.getPageNum(),dto.getPageSize()));
+        return userService.page(new Page<User>(1,10));
     }
 }

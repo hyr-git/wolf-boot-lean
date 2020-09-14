@@ -20,30 +20,27 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerAutoConfiguration {
 
 
-    /**
-     * 创建API应用
-     * apiInfo增加API相关信息
-     * 通过select()函数返回一个ApiSelectorBuilder实例，用来控制哪些接口暴露给Swagger来展现
-     * 本例采用指定扫描的包路径来定义指定要建立API的目录
-     * @return
-     */
     @Bean
     public Docket createRestApi(){
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                //控制暴露出去的路径下的实例
-                //如果某个接口不想暴露，可以使用一下注释
-                //@ApiIgnore 这样，该接口就不会暴露在swagger的页面下
-                .apis(RequestHandlerSelectors.basePackage("com.cyz.boot.controller"))
+                //为当前包下controller生成API文档
+                .apis(RequestHandlerSelectors.basePackage("com.hyr.boot.controller"))
+                //为有@Api注解的Controller生成API文档
+//                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+                //为有@ApiOperation注解的方法生成API文档
+//                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build();
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("接口文档")
-                .version("1.0.0-SNAPSHOT")
+                .title("SwaggerUI演示")
+                .description("mall-tiny")
+                .contact("macro")
+                .version("1.0")
                 .build();
     }
 }
