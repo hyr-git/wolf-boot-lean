@@ -9,8 +9,8 @@
 		<artifactId>wolf-boot-lean</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>wolf-boot-lean-rabbitmq</artifactId>
-	<name>wolf-boot-lean-rabbitmq</name>
+	<artifactId>wolf-boot-simple-rabbitmq</artifactId>
+	<name>wolf-boot-simple-rabbitmq</name>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<url>http://maven.apache.org</url>
