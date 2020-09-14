@@ -10,8 +10,11 @@
        scan:设置为true时,配置文见发生改变,将会被重新加载,默认值为true 
        scanPeriod:设置检测配置文件是否有小改的时间间隔,如果没有给出时间单位,默认单位时毫秒。当scan为true时,scanPeriod属性生效.默认的时间间隔为1分分钟。
        debug:当此属性设置为true时,将打印出logback内部日志信息,实时查看logback运行状态,默认值为false  
+       
+              每一分钟扫描配置文件
 -->
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 设置上下文名称 -->
 	<contextName>${HOSTNAME}</contextName>
 	
 	<!-- 定义日志文件输入位置 -->
@@ -25,10 +28,16 @@
 	<springProperty scope="context" name="ip"
 		source="spring.cloud.client.ipAddress" />
 		
+	<!-- 定义日志输出格式变量：%d表示时间 花括号内为时间格式 %level表示日志级别 %thread表示线程名 %logger{0}表示输出日志的类名 [%line]表示行号用方括号包裹 %msg表示日志消息 %n换行 -->
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS,+08:00} [%t] ${SPRING_PROFILES_ACTIVE} %p %logger [%mdc{X_REQUEST_ID},%mdc{TRACE_ID},%mdc{X_REAL_IP},%mdc{REQUEST_URI},%mdc{REMOTE_ADDR_METHOD},%mdc{QUERY_NAME}] ${CONTEXT_NAME} - %m%n"/>
+   	
 	<property name="CONSOLE_LOG_PATTERN"
 		value="[%d{yyyy-MM-dd HH:mm:ss.SSS} ${ip} ${appName} %highlight(%-5level) %yellow(%X{X-B3-TraceId}),%green(%X{X-B3-SpanId}),%blue(%X{X-B3-ParentSpanId}) %yellow(%thread) %green(%logger) %msg%n" />
 
-
+    <!-- 定义日志字符集 -->
+    <property name="log.charset" value="UTF-8"/>
+    
+    
      <!-- ConsoleAppender 控制台输出日志  -->
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
@@ -36,7 +45,7 @@
 			<pattern>
                 <pattern>
                    {
-						"ip": "${ip}",
+						"ip": "%X{x_real_ip}",
 						"app": "${appName}",
 						"level": "%level",
 						"trace": "%X{X-B3-TraceId:-}",
@@ -44,6 +53,12 @@
 						"parent": "%X{X-B3-ParentSpanId:-}",
 						"thread": "%thread",
 						"class": "%logger{40}",
+						"REQUEST_ID": "%X{REQUEST_ID}",
+						"REQUEST_URI": "%X{REQUEST_URI}",
+						"REMOTE_ADDR_METHOD": "%X{REMOTE_ADDR_METHOD}",
+						"REQUEST_PAREMAS": "%X{REQUEST_PAREMAS}",
+						"REQUEST_PARAM": "%X{REQUEST_PARAM}",
+						"QUERY_NAME": "%X{QUERY_NAME}",
 						"message": "%message",
 						"stack_trace": "%exception{10}"
 					}
@@ -201,6 +216,9 @@
 						"parent": "%X{X-B3-ParentSpanId:-}",
 						"thread": "%thread",
 						"class": "%logger",
+						"REQUEST_URI": "%X{REQUEST_URI}",
+						"REMOTE_ADDR_METHOD": "%X{REMOTE_ADDR_METHOD}",
+						"QUERY_NAME": "%X{QUERY_NAME}",
 						"message": "%message",
 						"stack_trace": "%exception{10}"
 						}
