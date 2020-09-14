@@ -38,6 +38,18 @@ public class IndexController {
         return emp;
     }
     
+    
+    @GetMapping(value = "/employee")
+    public Employee getEmployeeByName(@RequestBody Employee employee) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        LOG.info("============打印日志开始============查询参数》》》。emp="+employee);
+        LOG.info("URL: " + request.getRequestURL().toString());
+        Employee emp = employeeService.getEmployee(employee);
+        LOG.info("============打印日志结束============返回结果emp=>>>"+emp);
+        return emp;
+    }
+    
     @GetMapping(value = "/empList")
     public List<Employee> findEmployeeList(@RequestBody String empName) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

@@ -61,7 +61,7 @@ public class LogAspect {
 	 /**
      * 切面controller
      */
-	@Pointcut("execution(public * com.hyr.lean.aop.controller.*.*(..))")
+	@Pointcut("execution(public * com.hyr.lean.aop.*.*.*(..))")
 	//@Pointcut("execution(public * com.hyr.lean.aop.controller.*.*(..)) && @annotation(com.hyr.lean.aop.annotation.LogAnnotation)")
     public void executeController() {
     }
@@ -76,29 +76,54 @@ public class LogAspect {
         executeAfterController(joinPoint, rtv);
     }
 	
-   /* @Around(value = "executeController()")
+   //@Around(value = "executeController()")
     public Object around(ProceedingJoinPoint joinPoint){//通过joinPoint对象获取参数以及其他对象信息
 
     String MethodName = joinPoint.getSignature().getName();
     Object result = null;
 
     try {
-        executeControllerBefore(joinPoint);
-    result = joinPoint.proceed();
-    MDC.put("response",JSONUtil.toJsonStr(result));
+       // executeControllerBefore(joinPoint);
+    	RequestAttributes ra = RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes sra = (ServletRequestAttributes) ra;
+        assert sra != null;
+        HttpServletRequest request = sra.getRequest();
+        request.setAttribute("startTime", System.currentTimeMillis());
+        request.setAttribute("requestBody", JSONUtil.toJsonStr(joinPoint.getArgs()));
+        
+        String url = request.getRequestURL().toString();
+        String method = request.getMethod();
+        //String queryName=getFieldsName(joinPoint,request);
+        String x_request_id = request.getHeader("X-Request-Id");
+        //String x_real_ip = getCliectIp(request);
+        String reuqestIp = InetAddress.getLocalHost().getHostAddress();
+
+        //nginx返回的唯一请求Id
+        MDC.put("requestId", UUID.randomUUID().toString());
+        //本项目自动生成的唯一请求Id
+        //MDC.put("TRACE_ID",UUID.randomUUID().toString());
+        //请求的服务器的真实的IP地址
+        MDC.put("requestIP",reuqestIp);
+        //服务请求路径
+        MDC.put("requestURI",url);
+        
+        //服务请求的方法，post或者get
+        MDC.put("requestMethodType",method);
+        //服务的请求的参数
+        MDC.put("requestParam",JSONUtil.toJsonStr(joinPoint.getArgs()));
+        result = joinPoint.proceed();
+        MDC.put("response",JSONUtil.toJsonStr(result));
     } catch (Throwable e) {
        log.error("Method:"+MethodName+",Params:"+JSONUtil.toJsonStr(joinPoint.getArgs())+"error:"+e.getMessage());
     }
 
     return result;
 
-    }*/
+    }
     
 	private void executeControllerBefore(JoinPoint joinPoint) {
         try {
-           /* HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            request.setAttribute("startTime", System.currentTimeMillis());
-            request.setAttribute("requestBody", JSONUtil.toJsonStr(joinPoint.getArgs()));*/
+       
             methodInvoke(joinPoint);
             
             RequestAttributes ra = RequestContextHolder.getRequestAttributes();
@@ -128,7 +153,6 @@ public class LogAspect {
             MDC.put("requestMethodType",method);
             //服务的请求的参数
             MDC.put("requestParam",JSONUtil.toJsonStr(joinPoint.getArgs()));
-            
             
         } catch (Exception e) {
             //log.error("切面日志前置通知存在异常" + e.getMessage());
@@ -165,15 +189,15 @@ public class LogAspect {
 	            //apiAccessLog.setResponse(JSON.toJSONString(rtv, SerializerFeature.WriteMapNullValue));
 	            apiAccessLog.setExecuteTime(executeTime);
 	            apiAccessLog.setApiRequestTime(new Date());
-	            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>"+apiAccessLog);
-	            
 	            
 	            MDC.put("requestBody",(String) request.getAttribute("requestBody"));
 	            MDC.put("response",JSONUtil.toJsonStr(rtv));
 	            MDC.put("returnCode",response.getStatus()+"");
 	            
+	            
+	            //删除多余的数据
 	            String requestId = MDC.get("requestId");
-	            log.info("{requestId:{}}-");
+	            log.info("response  =   {}>>>"+apiAccessLog);
 	            MDC.remove("X_REQUEST_ID");
 	            MDC.remove("TRACE_ID");
 	            MDC.remove("X_REAL_IP");
@@ -222,26 +246,4 @@ public class LogAspect {
         //服务的请求的参数
         MDC.put("QUERY_NAME",JSONUtil.toJsonStr(params));
 	}
-
-	/** * 获取请求的参数 * @param joinPoint * @return */
-    /*private static  String getFieldsName(JoinPoint joinPoint,HttpServletRequest request) {
-        String method = request.getMethod();
-        String params = "";
-        Object[] args = joinPoint.getArgs();
-        String queryString = request.getQueryString();
-        if (args.length > 0) {
-            if ("POST".equals(method)) {
-                Object object = args[0];
-                Map map = getKeyAndValue(object);
-                params = JSON.toJSONString(map);
-                ;
-            } else if ("GET".equals(method)) {
-                params = queryString;
-            }
-        }
-        return params;
-    }*/
-	
-	
-	
 }
