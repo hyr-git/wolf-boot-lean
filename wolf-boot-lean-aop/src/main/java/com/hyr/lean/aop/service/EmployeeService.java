@@ -25,10 +25,16 @@ public class EmployeeService {
 	}
 	
 	public Employee getEmp(String empName) {
+		employeeList = null;
 		log.info("empName:"+empName);
 		return employeeList.stream().filter(s->s.getName().equals(empName)).findFirst().orElse(null);
 	}
 	
+	public Employee getEmployee(Employee employee) {
+		employeeList = null;
+		log.info("emp----->:"+employee);
+		return employeeList.stream().filter(s->s.getName().equals(employee.getName())).findFirst().orElse(null);
+	}
 	
 	public List<Employee> findEmpList(String empName) {
 		if(null == empName) {

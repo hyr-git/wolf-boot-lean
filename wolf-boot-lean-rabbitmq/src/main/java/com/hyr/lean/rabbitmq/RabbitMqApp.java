@@ -16,6 +16,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 
  * AMQP的主要特征是面向消息、队列、路由(包括点对点和发布订阅)、可靠性、安全
  * 用于在分布式系统中存储转发消息,在易用性、可扩展、高可用等。
+ * 
+ * Virtual Host 虚拟主机,表示一批交换器,消息队列和相关对象。是共享相同的身份认证和加密环境的独立服务器阈。
+ *      每一个vhost就是一个mini版的rabbitMQ服务器,拥有自己的队列、交换器、绑定和权限机制。
+ * Broker  消息队列服务器实体。     
+ * 
+ * 
  */
 @SpringBootApplication
 public class RabbitMqApp 
