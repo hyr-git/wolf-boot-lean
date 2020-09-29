@@ -1,91 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-    从高到低 OFF、FATAL、ERROR、WARN、INFO、DEBUG、TRACE、ALL
-    日志输出规则  根据当前ROOT级别,日志输出时,级别高于root默认的级别时会输出
- 以下每个配置的filter是过滤输出文件里面.会出现高级别文件,依然出现低级别的日志信息,通过filter过来只记录本级别的日志。
- -->
+<!-- 从高到低 OFF、FATAL、ERROR、WARN、INFO、DEBUG、TRACE、ALL 日志输出规则 根据当前ROOT级别,日志输出时,级别高于root默认的级别时会输出 
+	以下每个配置的filter是过滤输出文件里面.会出现高级别文件,依然出现低级别的日志信息,通过filter过来只记录本级别的日志。 -->
 
 
-<!-- 属性描述
-       scan:设置为true时,配置文见发生改变,将会被重新加载,默认值为true 
-       scanPeriod:设置检测配置文件是否有小改的时间间隔,如果没有给出时间单位,默认单位时毫秒。当scan为true时,scanPeriod属性生效.默认的时间间隔为1分分钟。
-       debug:当此属性设置为true时,将打印出logback内部日志信息,实时查看logback运行状态,默认值为false  
-       
-              每一分钟扫描配置文件
--->
-<configuration scan="true" scanPeriod="60 seconds" debug="false">
-    <!-- 设置上下文名称 -->
+<!-- 属性描述 scan:设置为true时,配置文见发生改变,将会被重新加载,默认值为true scanPeriod:设置检测配置文件是否有小改的时间间隔,如果没有给出时间单位,默认单位时毫秒。当scan为true时,scanPeriod属性生效.默认的时间间隔为1分分钟。 
+	debug:当此属性设置为true时,将打印出logback内部日志信息,实时查看logback运行状态,默认值为false 每一分钟扫描配置文件 -->
+<configuration scan="true" scanPeriod="60 seconds"
+	debug="false">
+	<!-- 设置上下文名称 -->
 	<contextName>${HOSTNAME}</contextName>
-	
+
 	<!-- 定义日志文件输入位置 -->
-	<property name="LOG_PATH" value="phantom-log" />
-	
+	<property name="LOG_PATH" value="d:/12345/temp" />
+    <property name="appName" value="logvskx" />
 	<!-- 日志最大的历史 30天 -->
 	<property name="maxHistory" value="30" />
-	
-	<springProperty scope="context" name="appName"
-		source="spring.application.name" />
-	<springProperty scope="context" name="ip"
-		source="spring.cloud.client.ipAddress" />
-		
-	<!-- 定义日志输出格式变量：%d表示时间 花括号内为时间格式 %level表示日志级别 %thread表示线程名 %logger{0}表示输出日志的类名 [%line]表示行号用方括号包裹 %msg表示日志消息 %n换行 -->
-    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS,+08:00} [%t] ${SPRING_PROFILES_ACTIVE} %p %logger [%mdc{X_REQUEST_ID},%mdc{TRACE_ID},%mdc{X_REAL_IP},%mdc{REQUEST_URI},%mdc{REMOTE_ADDR_METHOD},%mdc{QUERY_NAME}] ${CONTEXT_NAME} - %m%n"/>
-   	
-	<property name="CONSOLE_LOG_PATTERN"
+
+
+	<!-- 定义日志输出格式变量：%d表示时间 花括号内为时间格式 %level表示日志级别 %thread表示线程名 %logger{0}表示输出日志的类名 
+		[%line]表示行号用方括号包裹 %msg表示日志消息 %n换行 -->
+	<property name="log.pattern"
+		value="%d{yyyy-MM-dd HH:mm:ss.SSS,+08:00} [%t] ${SPRING_PROFILES_ACTIVE} %p %logger [%mdc{X_REQUEST_ID},%mdc{TRACE_ID},%mdc{X_REAL_IP},%mdc{REQUEST_URI},%mdc{REMOTE_ADDR_METHOD},%mdc{QUERY_NAME}] ${CONTEXT_NAME} - %m%n" />
+
+	<property name="CONSOLE_LOG_PATTERN1"
 		value="[%d{yyyy-MM-dd HH:mm:ss.SSS} ${ip} ${appName} %highlight(%-5level) %yellow(%X{X-B3-TraceId}),%green(%X{X-B3-SpanId}),%blue(%X{X-B3-ParentSpanId}) %yellow(%thread) %green(%logger) %msg%n" />
 
-    <!-- 定义日志字符集 -->
-    <property name="log.charset" value="UTF-8"/>
-    
-    
-     <!-- ConsoleAppender 控制台输出日志  -->
+	<property name="CONSOLE_LOG_PATTERN"
+		value='{
+				"ip": "%X{x_real_ip}",
+				"app": "${appName}",
+				"level": "%level",
+				"trace": "%X{X-B3-TraceId:-}",
+				"span": "%X{X-B3-SpanId:-}",
+				"parent": "%X{X-B3-ParentSpanId:-}",
+				"thread": "%thread",
+				"class": "%logger",
+				"REQUEST_ID": "%X{REQUEST_ID}",
+				"REQUEST_URI": "%X{REQUEST_URI}",
+				"REQUEST_URL": "%X{REQUEST_URL}",
+				"REMOTE_ADDR_METHOD": "%X{REMOTE_ADDR_METHOD}",
+				"REQUEST_PAREMAS": "%X{REQUEST_PAREMAS}",
+				"REQUEST_PARAM": "%X{REQUEST_PARAM}",
+				"QUERY_NAME": "%X{QUERY_NAME}",
+				"message": "%message",
+				"stack_trace": "%exception"
+			}%n' />
+			
+	<property name="console_pattern"
+		value='{"level": "%level","timestamp": "%d{yyyy-MM-dd HH:mm:ss.SSS}","class": "%mdc{classPath}","method":"%mdc{methodName}","request_body":"%X{requestParam}","message": "%message","stack_trace": "%message","name": "${appName}","request_id": "%mdc{requestId}","request_uri": "%mdc{requestURI}","trace_id": "%X{traceId:-}","span_id": "%X{spanId:-}","thread": "%thread", "request_method":"%X{requestMethodType}","remote_addr": "%X{requestIP}","request_host": "%mdc{remoteHost}"}%n' />
+
+
+	<!-- 定义日志字符集 -->
+	<property name="log.charset" value="UTF-8" />
+
+
+	<!-- ConsoleAppender 控制台输出日志 -->
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<pattern>
-                <pattern>
-                   {
-						"ip": "%X{x_real_ip}",
-						"app": "${appName}",
-						"level": "%level",
-						"trace": "%X{X-B3-TraceId:-}",
-						"span": "%X{X-B3-SpanId:-}",
-						"parent": "%X{X-B3-ParentSpanId:-}",
-						"thread": "%thread",
-						"class": "%logger{40}",
-						"REQUEST_ID": "%X{REQUEST_ID}",
-						"REQUEST_URI": "%X{REQUEST_URI}",
-						"REMOTE_ADDR_METHOD": "%X{REMOTE_ADDR_METHOD}",
-						"REQUEST_PAREMAS": "%X{REQUEST_PAREMAS}",
-						"REQUEST_PARAM": "%X{REQUEST_PARAM}",
-						"QUERY_NAME": "%X{QUERY_NAME}",
-						"message": "%message",
-						"stack_trace": "%exception{10}"
-					}
-                </pattern>
-            </pattern>
+				${console_pattern}
+			</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>debug</level>
 		</filter>
 	</appender>
-
-    <!-- 滚动记录文件,先将日志就到指定文件,当符合某个条件时,将日志记录到其他文件种 RollingFileAppender -->
-	<appender name="FILE_ERROR"
+	
+	
+	<!-- 滚动记录文件,先将日志就到指定文件,当符合某个条件时,将日志记录到其他文件种 RollingFileAppender -->
+	<appender name="filelog"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>../${LOG_PATH}/${appName}/${appName}-error.log</file>
-		
+		<file>${LOG_PATH}/${appName}/${appName}.log</file>
+         <!-- 按照固定窗口模式生产日志文件,当文件大于20MB,生成新的日志文件.窗口大小都是1到3,当保存了3个归档文件后,将覆盖最早的日志 <rollingPolicy 
+			class="ch.qos.logback.core.rolling.fixedWindowRollingPolicy"> <fileNamePattern>${log_dir}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern> 
+			<minIndex>1</minIndex> <maxIndex>3</maxIndex> </rollingPolicy> -->
+		<!-- 过滤器,只记录指定级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<!-- 	<level>info</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch> -->
+		</filter>
+
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${log.pattern}</pattern>
+			<charset>utf-8</charset>
+		</encoder>
 		<!-- 最常用的滚动策略,他根据时间来制定滚动策略,既负责滚动也负责触发滚动 -->
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- 日志输出位置:可相对、绝对路径 -->
 			<fileNamePattern>
-			    ../${LOG_PATH}/${appName}/${appName}-error-%d{yyyy-MM-dd}.%i.log
+				${LOG_PATH}/${appName}/${appName}-%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
-			<!-- 
-			     可选节点,控制保留的归档文件的最大数据量,超出数量就删除旧文件,假设设置每个月滚动,且maxHistory为6,则保留最近6个月的文件,删除之前的文件
-			      注意删除旧文件，即为了归档而创建的目录也会被删除
-			 -->
+			<!-- 可选节点,控制保留的归档文件的最大数据量,超出数量就删除旧文件,假设设置每个月滚动,且maxHistory为6,则保留最近6个月的文件,删除之前的文件 
+				注意删除旧文件，即为了归档而创建的目录也会被删除 -->
 			<maxHistory>${maxHistory}</maxHistory>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -93,24 +105,43 @@
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<append>true</append>
-		
-		<!-- 按照固定窗口模式生产日志文件,当文件大于20MB,生成新的日志文件.窗口大小都是1到3,当保存了3个归档文件后,将覆盖最早的日志
-		<rollingPolicy class="ch.qos.logback.core.rolling.fixedWindowRollingPolicy">
-          <fileNamePattern>${log_dir}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern>     
-          <minIndex>1</minIndex>     
-          <maxIndex>3</maxIndex>  		
-        </rollingPolicy>
-		 -->
+	</appender>
+
+	<!-- 滚动记录文件,先将日志就到指定文件,当符合某个条件时,将日志记录到其他文件种 RollingFileAppender -->
+	<appender name="FILE_ERROR"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${appName}/${appName}-error.log</file>
+
+		<!-- 最常用的滚动策略,他根据时间来制定滚动策略,既负责滚动也负责触发滚动 -->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 日志输出位置:可相对、绝对路径 -->
+			<fileNamePattern>
+				${LOG_PATH}/${appName}/${appName}-error-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<!-- 可选节点,控制保留的归档文件的最大数据量,超出数量就删除旧文件,假设设置每个月滚动,且maxHistory为6,则保留最近6个月的文件,删除之前的文件 
+				注意删除旧文件，即为了归档而创建的目录也会被删除 -->
+			<maxHistory>${maxHistory}</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>2MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<append>true</append>
+
+		<!-- 按照固定窗口模式生产日志文件,当文件大于20MB,生成新的日志文件.窗口大小都是1到3,当保存了3个归档文件后,将覆盖最早的日志 <rollingPolicy 
+			class="ch.qos.logback.core.rolling.fixedWindowRollingPolicy"> <fileNamePattern>${log_dir}/%d{yyyy-MM-dd}/.log.zip</fileNamePattern> 
+			<minIndex>1</minIndex> <maxIndex>3</maxIndex> </rollingPolicy> -->
 		<!-- 过滤器,只记录指定级别的日志 -->
 		<filter class="ch.qos.logback.classic.filter.LevelFilter">
 			<level>error</level>
 			<onMatch>ACCEPT</onMatch>
 			<onMismatch>DENY</onMismatch>
 		</filter>
-		
+
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<pattern>${console_pattern1}</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 	</appender>
@@ -122,10 +153,10 @@
 			<onMatch>ACCEPT</onMatch>
 			<onMismatch>DENY</onMismatch>
 		</filter>
-		<file>../${LOG_PATH}/${appName}/${appName}-warn.log</file>
+		<file>${LOG_PATH}/${appName}/${appName}-warn.log</file>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>../${LOG_PATH}/${appName}/${appName}-warn-%d{yyyy-MM-dd}.%i.log
+			<fileNamePattern>${LOG_PATH}/${appName}/${appName}-warn-%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -135,31 +166,31 @@
 		<append>true</append>
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<pattern>${CONSOLE_LOG_PATTERN1}</pattern>
 			<charset>utf-8</charset>
 		</encoder>
-		
+
 	</appender>
 
 	<appender name="FILE_INFO"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>../${LOG_PATH}/${appName}/${appName}-info.log</file>
+		<file>${LOG_PATH}/${appName}/${appName}-info.log</file>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- %d{yyyy-MM-dd}:每天的日期格式，%i：序号，从0开始 -->
-			<fileNamePattern>../${LOG_PATH}/${appName}/${appName}-info-%d{yyyy-MM-dd}.%i.log
+			<fileNamePattern>${LOG_PATH}/${appName}/${appName}-info-%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-			 <!-- 超过50MB再按日期生成新的文件 -->
-			<maxFileSize>2MB</maxFileSize>
+				<!-- 超过50MB再按日期生成新的文件 -->
+				<maxFileSize>2MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<!-- 追加方式记录日志 -->
 		<append>true</append>
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<pattern>${CONSOLE_LOG_PATTERN1}</pattern>
 			<charset>utf-8</charset>
 		</encoder>
 
@@ -169,33 +200,36 @@
 			<onMismatch>DENY</onMismatch>
 		</filter>
 	</appender>
-	
-	    <!-- INFO级别日志 appender -->  
-    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">  
-        <!-- 过滤器，只记录INFO级别的日志 -->  
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">  
-            <level>INFO</level>  
-            <onMatch>ACCEPT</onMatch>  
-            <onMismatch>DENY</onMismatch>  
-        </filter>  
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-            <!-- 按天回滚 daily -->  
-            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}/info-log.log  
-            </fileNamePattern>  
-            <!-- 日志最大的历史 60天 -->  
-            <maxHistory>${maxHistory}</maxHistory>  
-        </rollingPolicy>  
-        <encoder>  
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>  
-        </encoder>  
-    </appender>  
+
+	<!-- INFO级别日志 appender -->
+	<appender name="INFO"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 过滤器，只记录INFO级别的日志 -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 按天回滚 daily -->
+			<fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}/info-log.log
+			</fileNamePattern>
+			<!-- 日志最大的历史 60天 -->
+			<maxHistory>${maxHistory}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger -
+				%msg%n</pattern>
+		</encoder>
+	</appender>
 
 	<appender name="logstash"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>../${LOG_PATH}/${appName}/${appName}.json</file>
+		<file>${LOG_PATH}/${appName}/${appName}.json</file>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>../${LOG_PATH}/${appName}/${appName}-%d{yyyy-MM-dd}.json
+			<fileNamePattern>${LOG_PATH}/${appName}/${appName}-%d{yyyy-MM-dd}.json
 			</fileNamePattern>
 			<maxHistory>7</maxHistory>
 		</rollingPolicy>
@@ -206,91 +240,90 @@
 					<timeZone>UTC</timeZone>
 				</timestamp>
 				<pattern>
-					<pattern>
-						{
-						"ip": "${ip}",
-						"app": "${appName}",
-						"level": "%level",
-						"trace": "%X{X-B3-TraceId:-}",
-						"span": "%X{X-B3-SpanId:-}",
-						"parent": "%X{X-B3-ParentSpanId:-}",
-						"thread": "%thread",
-						"class": "%logger",
-						"REQUEST_URI": "%X{REQUEST_URI}",
-						"REMOTE_ADDR_METHOD": "%X{REMOTE_ADDR_METHOD}",
-						"QUERY_NAME": "%X{QUERY_NAME}",
-						"message": "%message",
-						"stack_trace": "%exception{10}"
-						}
-					</pattern>
+					{
+					"ip": "${ip}",
+					"app": "${appName}",
+					"level": "%level",
+					"trace": "%X{X-B3-TraceId:-}",
+					"span": "%X{X-B3-SpanId:-}",
+					"parent": "%X{X-B3-ParentSpanId:-}",
+					"thread": "%thread",
+					"class": "%logger",
+					"REQUEST_URI": "%X{REQUEST_URI}",
+					"REMOTE_ADDR_METHOD": "%X{REMOTE_ADDR_METHOD}",
+					"QUERY_NAME": "%X{QUERY_NAME}",
+					"message": "%message",
+					"stack_trace": "%exception{10}"
+					}\r\n
 				</pattern>
 			</providers>
 		</encoder>
 	</appender>
-	
+
 	<appender name="ASYNC_LOG_DEBUG"
-              class="ch.qos.logback.classic.AsyncAppender">
-        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
-        <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
-        <queueSize>${queueSize}</queueSize>
-        <appender-ref ref="FILE_INFO"/>
-    </appender>
-    
-    <appender name="ASYNC_LOG_INFO"
-              class="ch.qos.logback.classic.AsyncAppender">
-        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
-        <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
-        <queueSize>${queueSize}</queueSize>
-        <appender-ref ref="FILE_INFO"/>
-    </appender>
-    
-    <appender name="ASYNC_LOG_WARN"
-              class="ch.qos.logback.classic.AsyncAppender">
-        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
-        <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
-        <queueSize>${queueSize}</queueSize>
-        <!-- 添加附加的appender,最多只能添加一个 -->
-        <appender-ref ref="FILE_WARN"/>
-    </appender>
-    
-    <appender name="ASYNC_LOG_ERROR"
-              class="ch.qos.logback.classic.AsyncAppender">
-        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
-        <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
-        <queueSize>${queueSize}</queueSize>
-        <!-- 添加附加的appender,最多只能添加一个 -->
-        <appender-ref ref="FILE_ERROR"/>
-    </appender>
-    
-    <!-- 设置Spring、mybatis、jdbc日志输出级别 -->
-    <!-- additivity属性为false，表示此loger的打印信息不再向上级传递 -->
-   <logger name="org.springframework" level="INFO" additivity="false">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="ASYNC_LOG_INFO"/>
-    </logger>
-    
-    <!-- mybatis映射文件的日志输出级别 -->
-    <!--<logger name="com.admin.mapper" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="ASYNC_LOG_DEBUG"/>
-        <appender-ref ref="ASYNC_LOG_INFO"/>
-        <appender-ref ref="ASYNC_LOG_WARN"/>
-        <appender-ref ref="ASYNC_LOG_ERROR"/>
-    </logger>-->
+		class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>${queueSize}</queueSize>
+		<appender-ref ref="FILE_INFO" />
+	</appender>
+
+	<appender name="ASYNC_LOG_INFO"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>${queueSize}</queueSize>
+		<appender-ref ref="FILE_INFO" />
+	</appender>
+
+	<appender name="ASYNC_LOG_WARN"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>${queueSize}</queueSize>
+		<!-- 添加附加的appender,最多只能添加一个 -->
+		<appender-ref ref="FILE_WARN" />
+	</appender>
+
+	<appender name="ASYNC_LOG_ERROR"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>${queueSize}</queueSize>
+		<!-- 添加附加的appender,最多只能添加一个 -->
+		<appender-ref ref="FILE_ERROR" />
+	</appender>
+
+	<!-- 设置Spring、mybatis、jdbc日志输出级别 -->
+	<!-- additivity属性为false，表示此loger的打印信息不再向上级传递 -->
+	<logger name="org.springframework" level="INFO"
+		additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="ASYNC_LOG_INFO" />
+	</logger>
+
+	<!-- mybatis映射文件的日志输出级别 -->
+	<!--<logger name="com.admin.mapper" level="DEBUG" additivity="false"> <appender-ref 
+		ref="STDOUT"/> <appender-ref ref="ASYNC_LOG_DEBUG"/> <appender-ref ref="ASYNC_LOG_INFO"/> 
+		<appender-ref ref="ASYNC_LOG_WARN"/> <appender-ref ref="ASYNC_LOG_ERROR"/> 
+		</logger> -->
 
 	<logger name="com.hyr.lean.logback" level="DEBUG" />
-	
-	<logger name="java.sql.PreparedStatement" value="DEBUG" />    
-    <logger name="java.sql.Connection" value="DEBUG" />    
-    <logger name="java.sql.Statement" value="DEBUG" />    
-    <logger name="com.ibatis" value="DEBUG" />    
-    <logger name="com.ibatis.common.jdbc.SimpleDataSource" value="DEBUG" />    
-    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG"/>    
-    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" value="DEBUG" /> 
+
+	<logger name="java.sql.PreparedStatement" value="DEBUG" />
+	<logger name="java.sql.Connection" value="DEBUG" />
+	<logger name="java.sql.Statement" value="DEBUG" />
+	<logger name="com.ibatis" value="DEBUG" />
+	<logger name="com.ibatis.common.jdbc.SimpleDataSource"
+		value="DEBUG" />
+	<logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG" />
+	<logger
+		name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate"
+		value="DEBUG" />
 
 	<root level="INFO">
 		<appender-ref ref="FILE_ERROR" />
@@ -298,10 +331,11 @@
 		<appender-ref ref="FILE_INFO" />
 		<appender-ref ref="logstash" />
 		<appender-ref ref="STDOUT" />
-		
-		  <appender-ref ref="ASYNC_LOG_DEBUG"/>
-        <appender-ref ref="ASYNC_LOG_INFO"/>
-        <appender-ref ref="ASYNC_LOG_WARN"/>
-        <appender-ref ref="ASYNC_LOG_ERROR"/>
+		<appender-ref ref="filelog" />
+
+		<appender-ref ref="ASYNC_LOG_DEBUG" />
+		<appender-ref ref="ASYNC_LOG_INFO" />
+		<appender-ref ref="ASYNC_LOG_WARN" />
+		<appender-ref ref="ASYNC_LOG_ERROR" />
 	</root>
 </configuration>
