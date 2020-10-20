@@ -1,9 +1,10 @@
 package com.hyr.lean.logback.config;
+
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * @auther anumbrella
