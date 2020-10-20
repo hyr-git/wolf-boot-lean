@@ -6,7 +6,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSONObject;
 
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
@@ -38,12 +37,12 @@ public class Consumer {
         if(messageId == messageIdRedis){
             return;
         }
-        JSONObject jsonObject = JSONObject.parseObject(msg);
+        /*JSONObject jsonObject = JSONObject.parseObject(msg);
         String email = jsonObject.getString("email");
         String content = jsonObject.getString("timestamp");
 
         String httpUrl = "http://127.0.0.1:8080/email?email"+email+"&content="+content;
-        // 如果发生异常则返回null
+       */ // 如果发生异常则返回null
         //String body = HttpUtils.httpGet(httpUrl, "utf-8");
         //
         /*if(body == null){
