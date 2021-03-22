@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>logback</contextName>
+<springProperty scope="context" name="appName" source="spring.application.name" />
+<springProperty scope="context" name="ip" source="spring.cloud.client.ipAddress" />
+    <property name="app.log" value="carsir-olympic-admin"/>
+<!--     <property name="PATTERN" value="[%level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId}] [%X{spanId}] [%c{12}:%L] %msg%n"/>
+ -->
+ <!-- 
+    <property name="PATTERN"
+              value= "{
+                        'dateTime':'%d{yyyy-MM-dd HH:mm:ss.SSS}',
+                        'app': '${appName}',
+                        'level': '%level',
+                        'trace': '%X{traceId}',
+                        'span': '%X{spanId}',
+                        'thread': '%thread',
+                        'class': '%logger{40}',
+                        'message': '%message',
+                        'stack_trace': '%exception{10}'
+                        　　　　　　　　　} "
+    /> -->
+<!--     
+<appender name="console"           class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+ -->      
+       <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                <pattern>
+<!--                     <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS,+08:00} [%t] ${SPRING_PROFILES_ACTIVE} %p %logger [%mdc{X_REQUEST_ID},%mdc{TRACE_ID},%mdc{X_REAL_IP},%mdc{REQUEST_URI},%mdc{REMOTE_ADDR_METHOD},%mdc{QUERY_NAME}] ${CONTEXT_NAME} - %m%n"/>
+ -->                
+                    {
+                                "level": "%level",
+                                "timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}", 
+                                "name": "${appName}",
+                                "request_id": "%mdc{requestId}",
+                                "request_url": "%mdc{requestURI}",
+                                "remote_ip": "%X{requestIP}",
+                                "trace_id": "%X{traceId:-}",
+                                "span_id": "%X{spanId:-}",
+                                "parent": "%X{X-B3-ParentSpanId:-}",
+                                "thread": "%thread",
+                                "class": "%mdc{classPath}",
+                                "logger":"%logger",
+                                "method":"%mdc{methodName}",
+                                "request_body":"%mdc{requestParam}",
+                                "method_type":"%X{requestMethodType}",
+                                "line": "%L",
+                                "caller":"%caller{3}",
+                                "message": "%message",
+                                "stacktrace": "%exception",
+                                "CONTEXT_NAME":"${CONTEXT_NAME}"
+                    }
+                </pattern>
+            </pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="dev">
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+    <springProfile name="test">
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+    <springProfile name="pre">
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+    <springProfile name="prod">
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+</configuration>
