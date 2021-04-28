@@ -1,7 +1,5 @@
 package com.hyr.lean.base.common.interceptor;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,8 +24,8 @@ public class UserCache {
      * @author : Hu weihui
      * @since hui_project v1
      */
-    @Bean
+    /*@Bean
     public Cache<String,String> getUserCache(){
         return CacheBuilder.newBuilder().expireAfterAccess(2L,TimeUnit.SECONDS).build();
-    }
+    }*/
 }

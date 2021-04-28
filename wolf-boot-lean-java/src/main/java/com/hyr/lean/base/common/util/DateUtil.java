@@ -13,9 +13,6 @@ import java.util.Map;
 
 /**
  * <b><code>DateUtil</code></b>
- * <p/>
- * Description
- * <p/>
  * <b>Creation Time:</b> 2019/4/22 14:11.
  *
  * @author Hu-Weihui

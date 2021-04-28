@@ -1,6 +1,5 @@
 package com.hyr.lean.base.common.aspect;
 
-import com.hui.base.common.exception.VerifyException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Pointcut;
@@ -42,7 +41,7 @@ public class BindResultAspect {
                     errorStr.append(fieldError.getDefaultMessage())
                             .append(",");
                 }
-                throw new VerifyException(errorStr.toString());
+                throw new Exception(errorStr.toString());
             }
         }
         return joinPoint.proceed();

@@ -1,15 +1,17 @@
 package com.hyr.lean.base.common.interceptor;
 
-import com.google.common.cache.Cache;
-import com.hui.base.common.annotations.AvoidDuplicateFormToken;
-import com.hui.base.common.exception.FormTokenExceptionEnum;
-import com.hui.base.common.exception.FormTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
+
+import com.hyr.lean.base.common.annotations.AvoidDuplicateFormToken;
+import com.hyr.lean.base.common.exception.FormTokenException;
+import com.hyr.lean.base.common.exception.FormTokenExceptionEnum;
+
+import cn.hutool.cache.Cache;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,14 +75,15 @@ public class DuplicateSubmitInterceptor extends HandlerInterceptorAdapter {
 
             }
 
-            String clientoken = cache.getIfPresent(userToken);
+            String clientoken ="";//((Object) cache).getIfPresent(userToken);
             //查看cache内是否有token，token2秒内清除，有则为重复提交
             if (null != clientoken){
                 log.info("表单重复提交：用户token: {},表单token: {}", userToken);
                 throw new FormTokenException(FormTokenExceptionEnum.DUPLICATE_SUBMIT);
             }else {
                 //没有token则当做首次/二次提交，记录在cache
-                cache.put(userToken,UUID.randomUUID().toString());
+               //TODO 使用Redis中
+            	cache.put(userToken,UUID.randomUUID().toString());
             }
 
         } catch (Exception e) {

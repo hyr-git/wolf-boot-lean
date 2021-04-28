@@ -1,10 +1,11 @@
 package com.hyr.lean.base.common.config;
 
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.hui.base.common.convert.DateConverter;
-import com.hui.base.common.interceptor.DuplicateSubmitInterceptor;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.http.MediaType;
@@ -15,10 +16,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import javax.annotation.PostConstruct;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import com.hyr.lean.base.common.convert.DateConverter;
+import com.hyr.lean.base.common.interceptor.DuplicateSubmitInterceptor;
 
 /**
  * <b><code>WebConfig</code></b>
@@ -84,7 +83,7 @@ public class WebConfig implements WebMvcConfigurer {
      * @author HuWeihui
      * @since hui_project v1
      */
-    public HttpMessageConverter fastJsonHttpMessageConverters() {
+  /*  public HttpMessageConverter fastJsonHttpMessageConverters() {
         FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         fastJsonConfig.setSerializerFeatures(
@@ -96,7 +95,7 @@ public class WebConfig implements WebMvcConfigurer {
         converter.setFastJsonConfig(fastJsonConfig);
         converter.setSupportedMediaTypes(getSupportedMediaTypes());
         return converter;
-    }
+    }*/
 
     private List<MediaType> getSupportedMediaTypes() {
         List<MediaType> mediaTypes = new ArrayList<>();
@@ -123,7 +122,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(fastJsonHttpMessageConverters());
+       // converters.add(fastJsonHttpMessageConverters());
         converters.add(jacksonHttpMessageConverters());
     }
 }

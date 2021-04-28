@@ -1,7 +1,5 @@
 package com.hyr.lean.base.common.aspect;
 
-import com.hui.base.common.annotations.ValidateParams;
-import com.hui.base.common.response.ResultMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,6 +9,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
+
+import com.hyr.lean.base.common.annotations.ValidateParams;
+import com.hyr.lean.base.common.response.ResultMapper;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
